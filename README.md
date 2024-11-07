@@ -1,1 +1,2 @@
-# maze-exercise
+# Maze Test - Development Guide
+
