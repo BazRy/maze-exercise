@@ -18,11 +18,11 @@ public class MazeExplorerTest {
 
     @Test
     public void explorerShouldExploreMaze() {
-        final Coordinate expectedEndCoordinate = new Coordinate(14, 1);
+        final Coordinate expectedExitCoordinate = new Coordinate(14, 1);
         final Explorer explorer = new Explorer(new Position(new Coordinate(maze.getStartRow(), maze.getStartColumn()), Direction.NORTH));
         final MazeExplorer mazeExplorer = new MazeExplorer();
         mazeExplorer.exploreMaze(explorer, maze);
-        assertEquals(expectedEndCoordinate, explorer.getCurrentPosition().coordinate());
+        assertEquals(expectedExitCoordinate, explorer.getCurrentPosition().coordinate());
         assertEquals(Direction.SOUTH, explorer.getCurrentPosition().direction());
         assertTrue(explorer.getForwardMoves() > 0);
         assertFalse(explorer.getMovementRecord().isEmpty());

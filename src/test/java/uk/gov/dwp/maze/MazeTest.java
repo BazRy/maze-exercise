@@ -6,24 +6,36 @@ import uk.gov.dwp.maze.explore.Coordinate;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static uk.gov.dwp.maze.util.MazeUtil.createMazeFromFile;
 
 public class MazeTest {
 
     @Test
-    public void loadMazeAssertStartAndEndNodesCorrect () {
-        int expectedEndNodeRow = 14;
-        int expectedEndNodeColumn = 1;
+    public void loadMazeAssertStartAndExitNodeLocationsAreCorrect () {
+        int expectedExitNodeRow = 14;
+        int expectedExitNodeColumn = 1;
         final Maze maze = createMazeFromFile("MazeLarge.txt");
         final Optional<Node> startNode = maze.getNodeAtLocation(new Coordinate(maze.getStartRow(), maze.getStartColumn()));
         assertTrue(startNode.isPresent());
         assertTrue(startNode.get().getNodeType().isStart());
 
-        final Optional<Node> endNode = maze.getNodeAtLocation(new Coordinate(expectedEndNodeRow, expectedEndNodeColumn));
-        assertTrue(endNode.isPresent());
-        assertTrue(endNode.get().getNodeType().isExit());
+        final Optional<Node> exitNode = maze.getNodeAtLocation(new Coordinate(expectedExitNodeRow, expectedExitNodeColumn));
+        assertTrue(exitNode.isPresent());
+        assertTrue(exitNode.get().getNodeType().isExit());
+    }
+
+    @Test
+    public void loadMazeAssertNumberAllNodesAreCorrect () {
+        int expecteStartNodes = 1;
+        int expectedExitNodes = 2;
+        int expecteWallNodes = 70;
+        int expecteSpaceNodes = 32;
+        final Maze maze = createMazeFromFile("MazeSmall.txt");
+        assertEquals(expecteStartNodes, maze.getStartNodes());
+        assertEquals(expectedExitNodes, maze.getExitNodes());
+        assertEquals(expecteWallNodes, maze.getWallNodes());
+        assertEquals(expecteSpaceNodes, maze.getSpaceNodes());
     }
 
     @Test

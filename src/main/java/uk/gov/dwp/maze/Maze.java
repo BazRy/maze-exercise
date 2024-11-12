@@ -13,6 +13,8 @@ public class Maze {
     private final Node[][] nodes;
     private int startNodes;
     private int exitNodes;;
+    private int wallNodes;
+    private int spaceNodes;;
     private int startRow;
     private int startColumn;
 
@@ -43,6 +45,8 @@ public class Maze {
                     this.startNodes++;
                 }
                 this.exitNodes += nodeType.isExit() ? 1 : 0;
+                this.wallNodes += nodeType.isWall() ? 1 : 0;
+                this.spaceNodes += nodeType.isSpace() ? 1 : 0;
             }
         }
         verifyStartAndExits();
@@ -69,6 +73,7 @@ public class Maze {
         return startColumn;
     }
 
+
     public Optional<Node> getNodeAtLocation(Coordinate coordinate) {
         int row = coordinate.row();
         int column = coordinate.column();
@@ -79,5 +84,21 @@ public class Maze {
             }
         }
         return Optional.empty();
+    }
+
+    public int getStartNodes() {
+        return startNodes;
+    }
+
+    public int getExitNodes() {
+        return exitNodes;
+    }
+
+    public int getWallNodes() {
+        return wallNodes;
+    }
+
+    public int getSpaceNodes() {
+        return spaceNodes;
     }
 }
