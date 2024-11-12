@@ -5,14 +5,14 @@ import uk.gov.dwp.maze.explore.Coordinate;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Maze {
 
 
     private final Node[][] nodes;
-    private int walls;
-    private int spaces;
-    private int exits;;
+    private int startNodes;
+    private int exitNodes;;
     private int startRow;
     private int startColumn;
 
@@ -24,7 +24,7 @@ public class Maze {
     }
 
     private Node[][] constructMazeNodes (final List<String> lines) {
-
+        checkMazeIsBalanced(lines);
         final String[][] mazeCharacters = lines.stream()
                 .map(line -> line.split(""))
                 .toArray(String[][]::new);
@@ -37,41 +37,28 @@ public class Maze {
                 final Optional<NodeType> opt = NodeType.get(mazeCharacters[row][column]);
                 final NodeType nodeType = opt.orElseThrow(() -> new MazeLoaderException("Invalid character within maze"));
                 temp[row][column] = new Node(nodeType, new Coordinate(row, column));
-                incrementTotals(nodeType);
                 if(nodeType.isStart()) {
                     this.startRow = row;
                     this.startColumn = column;
+                    this.startNodes++;
                 }
+                this.exitNodes += nodeType.isExit() ? 1 : 0;
             }
         }
+        verifyStartAndExits();
         return temp;
     }
 
-    private void incrementTotals(final NodeType node) {
-
-        if(node.isWall()) {
-            walls++;
-            return;
-        }
-        if(node.isSpace()) {
-            spaces++;
-            return;
-        }
-        if(node.isExit()) {
-            exits++;
+    private void checkMazeIsBalanced(final List<String> lines) {
+        if (lines.stream().collect(Collectors.groupingBy(String::length)).size() > 1) {
+            throw new MazeLoaderException("Maze is unbalanced, it should be square/rectangular");
         }
     }
 
-    public int getWallTotal() {
-        return walls;
-    }
-
-    public int getSpacesTotal() {
-        return spaces;
-    }
-
-    public int getExitsTotal() {
-        return exits;
+    private void verifyStartAndExits() {
+        if(startNodes != 1 || exitNodes < 1) {
+            throw new MazeLoaderException("Maze should have a single start and at least one exit");
+        }
     }
 
     public int getStartRow() {

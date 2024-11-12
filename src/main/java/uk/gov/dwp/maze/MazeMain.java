@@ -1,34 +1,39 @@
 package uk.gov.dwp.maze;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.dwp.maze.explore.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Scanner;
 
 import static uk.gov.dwp.maze.util.MazeUtil.createMazeFromFile;
 
 public class MazeMain {
 
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(MazeMain.class);
+
     public static void main(String[] args) throws IOException {
-        final Maze maze = createMazeFromFile("Maze1.txt");
-        System.out.println("Walls " + maze.getWallTotal());
-        System.out.println("Spaces " + maze.getSpacesTotal());
-        System.out.println("Exits " + maze.getExitsTotal());
-        System.out.println("Start location is " + maze.getStartRow() + ", " + maze.getStartColumn());
+        final Maze maze = createMazeFromFile(getMazeFileName());
+        final Explorer explorer = new Explorer(new Position(new Coordinate(maze.getStartRow(), maze.getStartColumn()), Direction.NORTH));
 
-        Explorer explorer = new Explorer(new Position(new Coordinate(maze.getStartRow(), maze.getStartColumn()), Direction.NORTH));
-        System.out.println("Explorer position is " + explorer.toString());
-
-        MazeExplorer mazeExplorer = new MazeExplorer();
-        final List<Position> pathToExit = mazeExplorer.exploreMaze(explorer, maze);
-        printStepsToExploreMaze(pathToExit);
-        System.out.println("Number of steps to exit maze " + pathToExit.size());
-        System.out.println("Number of forward moves to exit maze " + explorer.getForwardMoves());
+        final MazeExplorer mazeExplorer = new MazeExplorer();
+        mazeExplorer.exploreMaze(explorer, maze);
+        printStepsToExploreMaze(explorer.getMovementRecord());
+        LOGGER.info("Number of steps to exit maze {}", explorer.getMovementRecord().size());
+        LOGGER.info("Number of forward moves to exit maze {}",explorer.getForwardMoves());
+    }
+    private static String getMazeFileName() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.printf("Please enter the name of the file containing the maze structure.");
+        return scanner.nextLine();
     }
 
     private static void printStepsToExploreMaze(final List<Position> pathToExit)  {
         for (Position position : pathToExit) {
-            System.out.println("Position was at grid position - row: " + position.coordinate().row() + ", column: " + position.coordinate().column() + " heading " + position.direction().name() + " direction.");
+            LOGGER.info("Position was at grid position - row: {} , column: {}, heading {}", position.coordinate().row(), position.coordinate().column(), position.direction().name());
         }
     }
 

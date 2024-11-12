@@ -1,20 +1,28 @@
 package uk.gov.dwp.maze.explore;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Explorer {
 
-    private Position position;
+    private Position currentPosition;
     private int forwardMoves;
+    final List<Position> movementRecord = new ArrayList<>();
 
-    public Explorer(Position position) {
-        this.position = position;
+    public Explorer(final Position startPosition) {
+        this.currentPosition = startPosition;
+        //record the explorer's start position
+        movementRecord.add(this.currentPosition);
     }
 
-    public Position getPosition() {
-        return position;
+    public Position getCurrentPosition() {
+        return currentPosition;
     }
 
-    public void setPosition(Position position) {
-        this.position = position;
+    public void setCurrentPosition(Position currentPosition) {
+        this.currentPosition = currentPosition;
+        //update the movement record
+        movementRecord.add(currentPosition);
     }
 
     public void incrementForwardMoves () {
@@ -25,10 +33,7 @@ public class Explorer {
         return forwardMoves;
     }
 
-    @Override
-    public String toString() {
-        return "Explorer{" +
-                "position=" + position +
-                '}';
+    public List<Position> getMovementRecord() {
+        return movementRecord;
     }
 }

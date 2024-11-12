@@ -2,30 +2,22 @@ package uk.gov.dwp.maze.explore;
 
 import uk.gov.dwp.maze.Maze;
 import uk.gov.dwp.maze.Node;
-
-import java.util.ArrayList;
-import java.util.List;
+import uk.gov.dwp.maze.exception.MazeExploreException;
 
 public class MazeExplorer {
 
 
-    public List<Position> exploreMaze(final Explorer explorer, final Maze maze) {
-        final List<Position> pathToExit = new ArrayList<>();
-        //add start position to the list
-        pathToExit.add(explorer.getPosition());
-        boolean reachedExit = false;
-
+    public void exploreMaze(final Explorer explorer, final Maze maze) {
+        boolean reachedExit;
         do {
-            reachedExit = explore2(explorer, maze, pathToExit);
+            reachedExit = explore(explorer, maze);
         } while (!reachedExit);
-
-        return pathToExit;
     }
 
-    private boolean explore2(final Explorer explorer, final Maze maze, final List<Position> pathToExit) {
-        final Coordinate currentCoordinate = explorer.getPosition().coordinate();
-        final Direction currentDirection = explorer.getPosition().direction();
-        final Node currentNode = maze.getNodeAtLocation(currentCoordinate).orElseThrow();
+    private boolean explore(final Explorer explorer, final Maze maze) {
+        final Coordinate currentCoordinate = explorer.getCurrentPosition().coordinate();
+        final Direction currentDirection = explorer.getCurrentPosition().direction();
+        final Node currentNode = maze.getNodeAtLocation(currentCoordinate).orElseThrow(() -> new MazeExploreException("Invalid maze node"));
 
         if (currentNode.getNodeType().isExit()) {
             //if we are at the exit then we're done.
@@ -37,53 +29,51 @@ public class MazeExplorer {
 
         //get node ahead of me
         final Coordinate forwardCoordinates = currentDirection.getForwardCooordinate();
-        final Node nodeInFrontOfMe = maze.getNodeAtLocation(new Coordinate(currentRow + forwardCoordinates.row(), currentColumn + forwardCoordinates.column())).orElseThrow();
+        final Node nodeInFrontOfMe = maze.getNodeAtLocation(new Coordinate(currentRow + forwardCoordinates.row(), currentColumn + forwardCoordinates.column())).orElseThrow(() -> new MazeExploreException("Invalid maze node"));
 
         //get node to my left
         final Coordinate leftCoordinates = currentDirection.getLeftCoordinate();
         final Direction leftDirection = currentDirection.getLeftDirection();
-        final Node nodeToLeftOfMe = maze.getNodeAtLocation(new Coordinate(currentRow + leftCoordinates.row(), currentColumn + leftCoordinates.column())).orElseThrow();
+        final Node nodeToLeftOfMe = maze.getNodeAtLocation(new Coordinate(currentRow + leftCoordinates.row(), currentColumn + leftCoordinates.column())).orElseThrow(() -> new MazeExploreException("Invalid maze node"));
 
         //get node to my right
         final Coordinate rightCoordinates = currentDirection.getRightCoordinate();
         final Direction rightDirection = currentDirection.getRightDirection();
-        final Node nodeToRightOfMe = maze.getNodeAtLocation(new Coordinate(currentRow + rightCoordinates.row(), currentColumn + rightCoordinates.column())).orElseThrow();
+        final Node nodeToRightOfMe = maze.getNodeAtLocation(new Coordinate(currentRow + rightCoordinates.row(), currentColumn + rightCoordinates.column())).orElseThrow(() -> new MazeExploreException("Invalid maze node"));
 
         if (!nodeToLeftOfMe.getNodeType().isWall() && !nodeToLeftOfMe.isExplored()) {
             //try go left first
-            progressMazePosition(explorer, nodeToLeftOfMe, leftDirection, pathToExit);
+            progressMazePosition(explorer, nodeToLeftOfMe, leftDirection);
             return false;
         } else if (!nodeToRightOfMe.getNodeType().isWall() && !nodeToRightOfMe.isExplored()) {
             //else try go right
-            progressMazePosition(explorer, nodeToRightOfMe, rightDirection, pathToExit);
+            progressMazePosition(explorer, nodeToRightOfMe, rightDirection);
             return false;
         } else if (!nodeInFrontOfMe.getNodeType().isWall() ) {
-            //otherwise just go forward even if visited node
-            progressMazePosition(explorer, nodeInFrontOfMe, currentDirection, pathToExit);
+            //otherwise just go forward even if explored node
+            progressMazePosition(explorer, nodeInFrontOfMe, currentDirection);
             explorer.incrementForwardMoves();
             return false;
         }
 
         //if we are here then we are stuck, so find the nearest direction we can head back in
+        //just turn in that direction, explorer will move on next iteration
         if (!nodeToLeftOfMe.getNodeType().isWall()) {
             setExplorerNewPosition(explorer, currentNode, leftDirection);
         } else if (!nodeToRightOfMe.getNodeType().isWall()) {
             setExplorerNewPosition(explorer, currentNode, rightDirection);
-        } else {
+        } else {//can't go left or right so will need to head back
             setExplorerNewPosition(explorer, currentNode, currentDirection.getReverseDirection());
         }
-
-        pathToExit.add(explorer.getPosition());
         return false;
     }
 
     private void setExplorerNewPosition(final Explorer explorer, final Node node, final Direction direction) {
-        explorer.setPosition(new Position(node.getCoordinate(), direction));
+        explorer.setCurrentPosition(new Position(node.getCoordinate(), direction));
     }
 
-    private void progressMazePosition(final Explorer explorer, final Node node, final Direction direction, final List<Position> pathToExit) {
+    private void progressMazePosition(final Explorer explorer, final Node node, final Direction direction) {
         setExplorerNewPosition(explorer, node, direction);
-        pathToExit.add(explorer.getPosition());
         node.setExplored(true);
     }
 
