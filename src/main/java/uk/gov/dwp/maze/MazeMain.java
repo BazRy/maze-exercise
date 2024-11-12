@@ -22,7 +22,7 @@ public class MazeMain {
         final MazeExplorer mazeExplorer = new MazeExplorer();
         mazeExplorer.exploreMaze(explorer, maze);
         printStepsToExploreMaze(explorer.getMovementRecord());
-        LOGGER.info("Number of steps to exit maze {}", explorer.getMovementRecord().size());
+        LOGGER.info("Number of moves to exit maze {}", explorer.getMovementRecord().size());
         LOGGER.info("Number of forward moves to exit maze {}",explorer.getForwardMoves());
     }
     private static String getMazeFileName() {
@@ -33,7 +33,7 @@ public class MazeMain {
 
     private static void printStepsToExploreMaze(final List<Position> pathToExit)  {
         for (Position position : pathToExit) {
-            LOGGER.info("Position was at grid position - row: {} , column: {}, heading {}", position.coordinate().row(), position.coordinate().column(), position.direction().name());
+            LOGGER.info("Explorer was at grid position - row: {} , column: {}, heading {}", position.coordinate().row(), position.coordinate().column(), position.direction().name());
         }
     }
 

@@ -7,7 +7,7 @@ public class Explorer {
 
     private Position currentPosition;
     private int forwardMoves;
-    final List<Position> movementRecord = new ArrayList<>();
+    private final List<Position> movementRecord = new ArrayList<>();
 
     public Explorer(final Position startPosition) {
         this.currentPosition = startPosition;
