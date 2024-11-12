@@ -14,9 +14,9 @@ Run the main class **MazeMain**, supplying one of the 2 maze txt files - **MazeL
 Once complete the class will output details of the positions encountered by the explore, the number of different steps/moves on the maze taken by the explorer ,
 and the number of moves forward taken by the explorer
 
-Position was at grid position - row: 13 , column: 1, heading SOUTH
-Position was at grid position - row: 14 , column: 1, heading SOUTH
-Number of steps to exit maze 74
+Position was at grid position - row: 13 , column: 1, heading SOUTH \
+Position was at grid position - row: 14 , column: 1, heading SOUTH \
+Number of steps to exit maze 74 \
 Number of forward moves to exit maze 61
 
 Tests
